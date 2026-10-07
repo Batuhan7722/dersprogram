@@ -1,0 +1,169 @@
+:root{
+  --bg:#f5f6fa; --card:#ffffff; --card-2:#eef0f7;
+  --text:#14162b; --muted:#6b7090; --line:#dfe2ee;
+  --accent:#4c5bd4; --accent-ink:#ffffff;
+  --danger:#c6354b;
+  --radius:14px;
+  --safe-b:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --card-2:#232749; --text:#eef0fb; --muted:#9aa0c4; --line:#2e3360;
+    --accent:#7b8bff; --accent-ink:#0f1226;
+    --danger:#ff7b8f;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--text);
+  font:16px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  -webkit-text-size-adjust:100%;
+  padding-bottom:calc(68px + var(--safe-b));
+}
+h1,h2,h3{margin:0}
+
+/* ---- topbar ---- */
+.topbar{
+  position:sticky; top:0; z-index:20;
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  padding:14px 16px; background:var(--bg);
+  border-bottom:1px solid var(--line);
+}
+.topbar h1{font-size:20px; font-weight:650; letter-spacing:-.2px}
+.today-label{font-size:13px; color:var(--muted)}
+
+#main{padding:16px; max-width:720px; margin:0 auto}
+.view{display:flex; flex-direction:column; gap:12px}
+.view[hidden],[hidden]{display:none !important}
+.section-h{font-size:14px; font-weight:650; color:var(--muted); margin-top:8px; text-transform:uppercase; letter-spacing:.04em}
+.empty{color:var(--muted); text-align:center; padding:28px 12px; background:var(--card); border-radius:var(--radius); margin:0}
+.hint{color:var(--muted); font-size:13px; margin:0}
+.err{color:var(--danger); font-size:14px; margin:0}
+
+/* ---- now card ---- */
+.now-card{
+  display:flex; flex-direction:column; gap:2px;
+  padding:16px; border-radius:var(--radius);
+  background:var(--accent); color:var(--accent-ink);
+}
+.now-kicker{font-size:12px; text-transform:uppercase; letter-spacing:.08em; opacity:.85}
+.now-name{font-size:22px; font-weight:700; letter-spacing:-.3px}
+.now-meta{font-size:14px; opacity:.9}
+
+/* ---- lesson list ---- */
+.lesson-list{display:flex; flex-direction:column; gap:8px}
+.lesson{
+  display:grid; grid-template-columns:62px 4px 1fr auto; align-items:center; gap:10px;
+  width:100%; text-align:left; cursor:pointer;
+  padding:12px 14px; border:none; border-radius:var(--radius);
+  background:var(--card); color:var(--text); font:inherit;
+}
+.lesson:active{transform:scale(.995)}
+.lesson.is-now{outline:2px solid var(--accent)}
+.lesson.is-past{opacity:.5}
+.lesson-time{font-variant-numeric:tabular-nums; font-size:13px; color:var(--muted); line-height:1.25}
+.lesson-bar{width:4px; height:34px; border-radius:2px; background:var(--accent)}
+.lesson-name{font-weight:600; letter-spacing:-.2px}
+.lesson-sub{font-size:13px; color:var(--muted)}
+.lesson-badge{font-size:11px; font-weight:650; padding:3px 8px; border-radius:999px; background:var(--accent); color:var(--accent-ink)}
+.lesson-note-dot{font-size:13px; color:var(--muted)}
+
+/* ---- week grid ---- */
+.week-wrap{overflow-x:auto; -webkit-overflow-scrolling:touch; background:var(--card); border-radius:var(--radius); padding:8px}
+.week-grid{position:relative; display:grid; grid-auto-flow:column}
+.wg-head{height:30px; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:650; color:var(--muted); border-bottom:1px solid var(--line)}
+.wg-head.is-today{color:var(--accent)}
+.wg-col{position:relative; border-left:1px solid var(--line)}
+.wg-gutter{width:46px}
+.wg-gutter .wg-col{border-left:none}
+.wg-hour{position:absolute; left:0; right:0; font-size:11px; color:var(--muted); font-variant-numeric:tabular-nums; padding-left:4px}
+.wg-line{position:absolute; left:0; right:0; border-top:1px dashed var(--line)}
+.wg-block{
+  position:absolute; left:3px; right:3px; overflow:hidden;
+  border-radius:8px; padding:4px 6px; border:none; cursor:pointer;
+  font:inherit; color:#0f1226; text-align:left; line-height:1.15;
+}
+.wg-block b{display:block; font-size:11.5px; font-weight:700; white-space:nowrap; text-overflow:ellipsis; overflow:hidden}
+.wg-block span{display:block; font-size:10px; opacity:.8; font-variant-numeric:tabular-nums}
+.wg-now{position:absolute; left:0; right:0; height:2px; background:var(--danger); z-index:5}
+
+/* ---- tasks ---- */
+.task-list{display:flex; flex-direction:column; gap:8px}
+.task{display:flex; align-items:flex-start; gap:12px; padding:12px 14px; background:var(--card); border-radius:var(--radius)}
+.task input[type=checkbox]{width:22px; height:22px; margin:1px 0 0; flex:none; accent-color:var(--accent)}
+.task-body{flex:1; min-width:0; cursor:pointer}
+.task-title{font-weight:600; letter-spacing:-.2px; word-break:break-word}
+.task.done .task-title{text-decoration:line-through; color:var(--muted)}
+.task-sub{font-size:13px; color:var(--muted); word-break:break-word}
+.task-sub .late{color:var(--danger); font-weight:650}
+.toggle-row{display:flex; align-items:center; gap:10px; font-size:14px; color:var(--muted); padding:4px}
+.toggle-row input{width:20px; height:20px; accent-color:var(--accent)}
+
+/* ---- edit list ---- */
+.edit-list{display:flex; flex-direction:column; gap:14px}
+.edit-day{display:flex; flex-direction:column; gap:8px}
+.edit-day > h3{font-size:14px; font-weight:650; color:var(--muted)}
+.row-btns{display:flex; flex-wrap:wrap; gap:8px}
+
+/* ---- buttons ---- */
+.btn{
+  font:inherit; font-weight:600; cursor:pointer;
+  padding:11px 16px; border-radius:12px;
+  background:var(--card-2); color:var(--text); border:1px solid var(--line);
+}
+.btn.primary{background:var(--accent); color:var(--accent-ink); border-color:transparent}
+.btn.danger{color:var(--danger)}
+.btn.block{width:100%}
+.btn:active{opacity:.85}
+
+/* ---- dialogs ---- */
+.sheet{
+  border:none; padding:20px; width:min(520px,100%);
+  background:var(--card); color:var(--text);
+  border-radius:18px 18px 0 0; margin:auto auto 0;
+  max-height:88vh; overflow-y:auto;
+}
+@media (min-width:560px){ .sheet{border-radius:18px; margin:auto} }
+.sheet::backdrop{background:rgba(6,8,22,.6)}
+.sheet h2{font-size:19px; margin-bottom:14px; letter-spacing:-.3px}
+.sheet form{display:flex; flex-direction:column; gap:12px}
+.sheet label{display:flex; flex-direction:column; gap:5px; font-size:13px; color:var(--muted); font-weight:600}
+.sheet input,.sheet select,.sheet textarea{
+  font:16px inherit; font-weight:400;
+  padding:11px 12px; border-radius:11px;
+  border:1px solid var(--line); background:var(--bg); color:var(--text);
+  width:100%;
+}
+.sheet textarea{resize:vertical}
+.two{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+.sheet-btns{display:flex; gap:8px; justify-content:flex-end; margin-top:16px; flex-wrap:wrap}
+.detail-meta{color:var(--muted); font-size:14px; margin:-8px 0 4px}
+.swatches{display:flex; flex-wrap:wrap; gap:8px}
+.swatch{width:34px; height:34px; border-radius:50%; border:2px solid transparent; cursor:pointer; padding:0}
+.swatch[aria-pressed=true]{border-color:var(--text); transform:scale(1.08)}
+
+/* ---- tabbar ---- */
+.tabbar{
+  position:fixed; left:0; right:0; bottom:0; z-index:30;
+  display:grid; grid-template-columns:repeat(4,1fr);
+  background:var(--card); border-top:1px solid var(--line);
+  padding-bottom:var(--safe-b);
+}
+.tab{
+  display:flex; flex-direction:column; align-items:center; gap:2px;
+  background:none; border:none; cursor:pointer;
+  padding:9px 4px 11px; font:inherit; font-size:11px; font-weight:600;
+  color:var(--muted);
+}
+.tab .ico{font-size:19px; line-height:1}
+.tab.is-active{color:var(--accent)}
+
+/* ---- toast ---- */
+.toast{
+  position:fixed; left:50%; transform:translateX(-50%);
+  bottom:calc(84px + var(--safe-b)); z-index:50;
+  background:var(--text); color:var(--bg);
+  padding:10px 16px; border-radius:999px; font-size:14px; font-weight:600;
+  box-shadow:0 6px 24px rgba(0,0,0,.25);
+}
