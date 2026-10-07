@@ -1,0 +1,33 @@
+{
+  "kaynak": "12. Sınıf Rehberlik Planlama Defteri — 06.10.2026 haftası",
+  "not": "Her hafta yeni planlayıcı yazıldığında bu dosya güncellenir; uygulamada Ayarlar → 'Haftanın planlayıcısını yükle' ile eklenir.",
+  "gorevler": [
+    { "ders": "Problem",   "baslik": "Günlük problem soruları",            "miktar": 20, "birim": "soru",  "tarih": "2026-10-07", "oncelik": 0 },
+    { "ders": "Matematik", "baslik": "D. Deposu",                          "miktar": 2,  "birim": "adet",  "tarih": "2026-10-07", "oncelik": 1 },
+    { "ders": "Kimya",     "baslik": "Mol",                                "miktar": 3,  "birim": "test",  "tarih": "2026-10-07", "oncelik": 0 },
+    { "ders": "Kimya",     "baslik": "Kimyasal hesaplamalar",              "miktar": 3,  "birim": "test",  "tarih": "2026-10-07", "oncelik": 0 },
+    { "ders": "Biyoloji",  "baslik": "Genden proteine — konu 5 (AYT)",     "miktar": 3,  "birim": "test",  "tarih": "2026-10-07", "oncelik": 0 },
+
+    { "ders": "Geometri",  "baslik": "Kitabı bitir",                       "miktar": 80, "birim": "sayfa", "tarih": "2026-10-08", "oncelik": 2 },
+    { "ders": "Türkçe",    "baslik": "Sözcük türleri",                     "miktar": 4,  "birim": "test",  "tarih": "2026-10-08", "oncelik": 1 },
+    { "ders": "Fizik",     "baslik": "Konu takibi (AYT)",                  "miktar": 1,  "birim": "konu",  "tarih": "2026-10-08", "oncelik": 0 },
+    { "ders": "Problem",   "baslik": "Günlük problem soruları",            "miktar": 20, "birim": "soru",  "tarih": "2026-10-08", "oncelik": 0 },
+    { "ders": "Matematik", "baslik": "D. Deposu",                          "miktar": 2,  "birim": "adet",  "tarih": "2026-10-08", "oncelik": 1 },
+    { "ders": "Kimya",     "baslik": "Kimyasal hesaplamalar",              "miktar": 3,  "birim": "test",  "tarih": "2026-10-08", "oncelik": 0 },
+    { "ders": "Biyoloji",  "baslik": "Genden proteine (AYT)",              "miktar": 5,  "birim": "test",  "tarih": "2026-10-08", "oncelik": 0 },
+
+    { "ders": "Problem",   "baslik": "Günlük problem soruları",            "miktar": 20, "birim": "soru",  "tarih": "2026-10-09", "oncelik": 0 },
+    { "ders": "Matematik", "baslik": "D. Deposu",                          "miktar": 4,  "birim": "adet",  "tarih": "2026-10-09", "oncelik": 0 },
+    { "ders": "Fizik",     "baslik": "Optik (TYT)",                        "miktar": 2,  "birim": "test",  "tarih": "2026-10-09", "oncelik": 0 },
+    { "ders": "Matematik", "baslik": "Log (AYT)",                          "miktar": 3,  "birim": "test",  "tarih": "2026-10-09", "oncelik": 0 },
+    { "ders": "Kimya",     "baslik": "Elektroliz konu çalışması (AYT)",    "miktar": 1,  "birim": "konu",  "tarih": "2026-10-09", "oncelik": 0 },
+
+    { "ders": "Problem",   "baslik": "Günlük problem soruları",            "miktar": 20, "birim": "soru",  "tarih": "2026-10-10", "oncelik": 0 },
+    { "ders": "Matematik", "baslik": "D. Deposu",                          "miktar": 3,  "birim": "adet",  "tarih": "2026-10-10", "oncelik": 0 },
+    { "ders": "Fizik",     "baslik": "Optik (TYT)",                        "miktar": 3,  "birim": "test",  "tarih": "2026-10-10", "oncelik": 0 },
+    { "ders": "Matematik", "baslik": "Log (AYT)",                          "miktar": 3,  "birim": "test",  "tarih": "2026-10-10", "oncelik": 0 },
+    { "ders": "Matematik", "baslik": "Diziler (AYT)",                      "miktar": 2,  "birim": "test",  "tarih": "2026-10-10", "oncelik": 0 },
+
+    { "ders": "Problem",   "baslik": "Günlük problem soruları",            "miktar": 20, "birim": "soru",  "tarih": "2026-10-11", "oncelik": 0 }
+  ]
+}

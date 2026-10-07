@@ -8,6 +8,7 @@ const UNITS = {
   test:  { label: 'test',  perBlock: 3  },
   soru:  { label: 'soru',  perBlock: 20 },
   konu:  { label: 'konu',  perBlock: 1  },
+  adet:  { label: 'adet',  perBlock: 1  },
   dk:    { label: 'dakika', perBlock: 45 }
 };
 

@@ -410,6 +410,53 @@ function saveExam() {
   toast('Deneme kaydedildi 📈');
 }
 
+/* ═══════════ haftanın planlayıcısı ═══════════ */
+/**
+ * data/hafta.json içindeki haftalık işleri görev havuzuna ekler.
+ * Aynı ders + başlık + tarih üçlüsü zaten varsa tekrar eklenmez.
+ */
+async function loadWeek() {
+  const btn = $('#loadWeekBtn');
+  btn.disabled = true;
+  const old = btn.textContent;
+  btn.textContent = 'Yükleniyor…';
+  try {
+    const res = await fetch('data/hafta.json?v=' + Date.now(), { cache: 'no-store' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    if (!Array.isArray(data.gorevler)) throw new Error('biçim');
+
+    let added = 0, skipped = 0;
+    for (const g of data.gorevler) {
+      let subj = subjectByName(g.ders);
+      if (!subj) {                                   // defterdeki ders yoksa oluştur
+        subj = { id: uid(), name: g.ders, color: PALETTE[state.subjects.length % PALETTE.length] };
+        state.subjects.push(subj);
+      }
+      const unit = UNITS[g.birim] ? g.birim : 'test';
+      const dup = state.tasks.some((t) =>
+        t.subjectId === subj.id && t.title === g.baslik && (t.due || '') === (g.tarih || ''));
+      if (dup) { skipped++; continue; }
+      state.tasks.push({
+        id: uid(), subjectId: subj.id, title: g.baslik,
+        amount: Math.max(1, num(g.miktar)), unit,
+        due: g.tarih || '', priority: num(g.oncelik), done: 0
+      });
+      added++;
+    }
+    save();
+    rerender();
+    toast(added + ' görev eklendi' + (skipped ? ', ' + skipped + ' zaten vardı' : '') + ' ✅');
+    if (added) show('tasks');
+  } catch (e) {
+    console.warn(e);
+    toast('Planlayıcı dosyası okunamadı. İnternet kapalıysa açıp tekrar dene.');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = old;
+  }
+}
+
 /* ═══════════ yedekleme ═══════════ */
 function exportData() {
   const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
@@ -573,6 +620,7 @@ function wire() {
     toast('Hız güncellendi');
   });
 
+  $('#loadWeekBtn').addEventListener('click', loadWeek);
   $('#exportBtn').addEventListener('click', exportData);
   $('#importBtn').addEventListener('click', () => $('#importFile').click());
   $('#importFile').addEventListener('change', (e) => {

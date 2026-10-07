@@ -42,10 +42,15 @@ function generatePlan(opts) {
   // 2a) acil olanlar (bugün/yarın teslim ya da "Acil") günün en çok %60'ını kapar
   const tomorrow = addDays(opts.date, 1);
   const isUrgent = (t) => (t.due && t.due <= tomorrow) || num(t.priority) >= 2;
+  // Rezerv içinde sıra önceliğe göre: "Acil" bir iş, aynı günün normal
+  // işleri yüzünden bloksuz kalmasın.
+  const urgentOrder = order.filter(isUrgent).sort((a, b) =>
+    num(b.priority) - num(a.priority) ||
+    (a.due || '9999-12-31').localeCompare(b.due || '9999-12-31'));
+
   let reserve = Math.ceil(capacity * 0.6);
-  for (const t of order) {
+  for (const t of urgentOrder) {
     if (capacity <= 0 || reserve <= 0) break;
-    if (!isUrgent(t)) continue;
     const take = Math.min(need.get(t.id), reserve, capacity);
     give.set(t.id, take);
     reserve -= take;
@@ -82,7 +87,7 @@ function generatePlan(opts) {
       });
       left -= take;
     }
-    if (left > 0) skipped.push({ taskId: t.id, amount: left, unit: t.unit });
+    if (left > 0) skipped.push({ taskId: t.id, amount: left, unit: t.unit, due: t.due || '' });
   }
 
   // Sıralama: önce herkesin 1. parçası, sonra 2. parçalar…
@@ -158,14 +163,21 @@ function generatePlan(opts) {
 
   // ── 5) sığmayanlar: hiç yerleştirilemeyen + plana girmeyen parçalar ──
   const leftMap = new Map();
-  const addLeft = (taskId, amount, unit) => {
+  // Sadece bugüne (ya da daha öncesine) yetişmesi gerekenler "sığmadı" sayılır;
+  // ileri tarihli işler zaten bugünün derdi değil.
+  const dueNow = (due) => !due || due <= opts.date;
+  const addLeft = (taskId, amount, unit, due) => {
+    if (!dueNow(due)) return;
     const e = leftMap.get(taskId) || { taskId, amount: 0, unit };
     e.amount += amount;
     leftMap.set(taskId, e);
   };
-  for (const c of chunks) addLeft(c.taskId, c.amount, c.unit);     // zamana sığmayanlar
-  for (const s2 of skipped) addLeft(s2.taskId, s2.amount, s2.unit); // kapasiteye girmeyenler
-  for (const s3 of trimmed) addLeft(s3.taskId, s3.amount, s3.unit);  // kısa blokta kırpılanlar
+  for (const c of chunks) addLeft(c.taskId, c.amount, c.unit, c.due === '9999-12-31' ? '' : c.due);
+  for (const s2 of skipped) addLeft(s2.taskId, s2.amount, s2.unit, s2.due);
+  for (const s3 of trimmed) {
+    const t3 = opts.tasks.find((t) => t.id === s3.taskId);
+    addLeft(s3.taskId, s3.amount, s3.unit, t3 ? (t3.due || '') : '');
+  }
 
   return {
     date: opts.date,

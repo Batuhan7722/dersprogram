@@ -22,7 +22,29 @@ miktarı otomatik düşer; görev bitene kadar her gün plana girmeye devam eder
 net gelişim grafiğini gör ve verilerinden çıkan tavsiyeleri oku.
 
 **Ayarlar** — dersler ve renkleri, blok/mola süreleri, yemek saati, gün tiplerinin
-varsayılan saatleri, blok başına iş hızların, yedek al/geri yükle.
+varsayılan saatleri, blok başına iş hızların, haftanın planlayıcısını yükleme,
+yedek al/geri yükle.
+
+## Haftanın planlayıcısı
+
+`data/hafta.json`, rehberlik planlama defterindeki haftalık işleri tutar.
+Ayarlar → **"Haftanın planlayıcısını yükle"** butonu bu dosyadaki görevleri havuza
+ekler; aynı ders + başlık + tarih üçlüsü zaten varsa tekrar eklemez, yani butona
+iki kere basmak zarar vermez.
+
+Her hafta yeni planlayıcı yazıldığında bu dosyayı güncellemek yeterli — görevleri
+tek tek elle girmeye gerek kalmaz. Dosya biçimi:
+
+```json
+{ "gorevler": [
+  { "ders": "Kimya", "baslik": "Mol", "miktar": 3, "birim": "test",
+    "tarih": "2026-10-07", "oncelik": 0 }
+] }
+```
+
+`birim`: sayfa · test · soru · konu · adet · dk  |  `oncelik`: 0 normal, 1 yüksek, 2 acil
+(acil işler günün en fazla %60'ını kapar ve rezervde önce gelir).
+Dosyada olmayan bir ders adı geçerse uygulama o dersi kendisi oluşturur.
 
 ## Plan motoru nasıl çalışıyor?
 
@@ -79,6 +101,7 @@ js/store.js             veri modeli, kayıt, yardımcılar
 js/planner.js           plan motoru + deneme analizi
 js/fx.js                konfeti ve kutlama efektleri
 js/app.js               ekranlar, olaylar, akış
+data/hafta.json         o haftanın planlayıcı defteri verisi
 manifest.webmanifest    uygulama kimliği
 sw.js                   çevrimdışı önbellek
 ```
