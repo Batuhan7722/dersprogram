@@ -1,9 +1,12 @@
-/* Ders Programı — offline önbellek */
-const CACHE = 'dersprogram-v1';
+/* Çalışma Planı — offline önbellek */
+const CACHE = 'calismaplani-v2';
 const ASSETS = [
   './',
   'index.html',
   'css/style.css',
+  'js/store.js',
+  'js/fx.js',
+  'js/planner.js',
   'js/app.js',
   'manifest.webmanifest',
   'icons/icon-192.png',

@@ -3,124 +3,175 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Ders Programı</title>
-<meta name="description" content="Haftalık ders programı, ödev takibi ve ders notları.">
-<meta name="theme-color" content="#0f1226">
+<title>Çalışma Planı</title>
+<meta name="description" content="Günlük çalışma planı, görev havuzu ve deneme analizi.">
+<meta name="theme-color" content="#07080f">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Ders Programı">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Çalışma">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+<canvas id="fx"></canvas>
 
 <header class="topbar">
-  <h1 id="viewTitle">Bugün</h1>
-  <div class="topbar-right">
-    <span id="todayLabel" class="today-label"></span>
+  <div>
+    <h1 id="viewTitle">Bugün</h1>
+    <p class="sub" id="viewSub"></p>
   </div>
+  <button class="streak" id="streakChip" title="Üst üste plan tamamlama">🔥 <span id="streakNum">0</span></button>
 </header>
 
 <main id="main">
 
-  <!-- ===== BUGÜN ===== -->
-  <section id="view-today" class="view">
-    <div id="nowCard" class="now-card" hidden>
-      <span class="now-kicker" id="nowKicker">Şu anki ders</span>
-      <strong class="now-name" id="nowName"></strong>
-      <span class="now-meta" id="nowMeta"></span>
+<!-- ══════════ BUGÜN ══════════ -->
+<section id="view-today" class="view">
+
+  <div class="hero" id="heroCard" hidden>
+    <svg class="ring" viewBox="0 0 120 120" aria-hidden="true">
+      <defs><linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6ea8fe"/><stop offset="1" stop-color="#a06eff"/></linearGradient></defs>
+      <circle class="ring-bg" cx="60" cy="60" r="52"/>
+      <circle class="ring-fg" cx="60" cy="60" r="52" id="ringFg"/>
+    </svg>
+    <div class="hero-txt">
+      <span class="hero-pct" id="heroPct">0%</span>
+      <span class="hero-sub" id="heroSub"></span>
+      <span class="hero-note" id="heroNote"></span>
     </div>
-    <div id="todayList" class="lesson-list"></div>
-    <h2 class="section-h" id="todayTasksH" hidden>Yaklaşan ödevler</h2>
-    <div id="todayTasks" class="task-list"></div>
-  </section>
+  </div>
 
-  <!-- ===== HAFTA ===== -->
-  <section id="view-week" class="view" hidden>
-    <div class="week-wrap">
-      <div id="weekGrid" class="week-grid"></div>
+  <!-- plan yokken: kurulum -->
+  <div class="setup card" id="setupCard">
+    <h2>Bugün için plan yok</h2>
+    <p class="muted" id="setupLead">Günün nasıl geçecek?</p>
+    <div class="seg" id="dayTypeSeg">
+      <button data-type="okul">🎒 Okula gidiyorum</button>
+      <button data-type="bos" class="on">🏠 Okul yok</button>
     </div>
-    <p id="weekEmpty" class="empty" hidden>Henüz ders eklenmedi. <b>Düzenle</b> sekmesinden ekleyebilirsin.</p>
-  </section>
+    <div class="two">
+      <label>Başlangıç <input type="time" id="planStart" value="09:00"></label>
+      <label>Bitiş <input type="time" id="planEnd" value="23:30"></label>
+    </div>
+    <p class="muted small" id="poolInfo"></p>
+    <button class="btn primary block big" id="genBtn">Planı oluştur ✨</button>
+  </div>
 
-  <!-- ===== ÖDEVLER ===== -->
-  <section id="view-tasks" class="view" hidden>
-    <button class="btn primary block" id="addTaskBtn">+ Ödev / not ekle</button>
-    <div id="taskList" class="task-list"></div>
-    <label class="toggle-row">
-      <input type="checkbox" id="showDone"> Tamamlananları göster
-    </label>
-  </section>
+  <div id="timeline" class="timeline"></div>
 
-  <!-- ===== DÜZENLE ===== -->
-  <section id="view-edit" class="view" hidden>
-    <button class="btn primary block" id="addLessonBtn">+ Ders ekle</button>
-    <div id="editList" class="edit-list"></div>
-    <h2 class="section-h">Veri</h2>
+  <div class="card leftover" id="leftoverCard" hidden>
+    <h3>Bugüne sığmayanlar</h3>
+    <div id="leftoverList"></div>
+    <p class="muted small">Bunlar yarınki planda öne alınır.</p>
+  </div>
+
+  <div class="row-btns" id="planActions" hidden>
+    <button class="btn" id="regenBtn">Planı yeniden kur</button>
+    <button class="btn danger" id="clearPlanBtn">Planı sil</button>
+  </div>
+</section>
+
+<!-- ══════════ GÖREVLER ══════════ -->
+<section id="view-tasks" class="view" hidden>
+  <button class="btn primary block big" id="addTaskBtn">+ Görev ekle</button>
+  <div id="taskPool"></div>
+  <p class="muted small">Görevler bitene kadar her gün plana girer. Kalan miktar otomatik düşer.</p>
+</section>
+
+<!-- ══════════ DENEMELER ══════════ -->
+<section id="view-exams" class="view" hidden>
+  <button class="btn primary block big" id="addExamBtn">+ Deneme ekle</button>
+  <div id="adviceBox"></div>
+  <div class="card" id="chartCard" hidden>
+    <h3>Net gelişimi</h3>
+    <div id="chart"></div>
+  </div>
+  <div id="examList"></div>
+</section>
+
+<!-- ══════════ AYARLAR ══════════ -->
+<section id="view-settings" class="view" hidden>
+  <div class="card">
+    <h3>Dersler</h3>
+    <div id="subjList" class="subj-list"></div>
+    <div class="add-subj">
+      <input id="newSubj" placeholder="Yeni ders adı" maxlength="24">
+      <button class="btn" id="addSubjBtn">Ekle</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Plan ayarları</h3>
+    <div class="two">
+      <label>Blok süresi (dk) <input type="number" id="setBlock" min="20" max="90" step="5"></label>
+      <label>Mola (dk) <input type="number" id="setBreak" min="5" max="30" step="5"></label>
+    </div>
+    <div class="two">
+      <label>Yemek saati <input type="time" id="setMealTime"></label>
+      <label>Yemek molası (dk) <input type="number" id="setMeal" min="15" max="90" step="5"></label>
+    </div>
+    <h4>Varsayılan saatler</h4>
+    <div class="two">
+      <label>Okul günü başlangıç <input type="time" id="setOkulStart"></label>
+      <label>Okul günü bitiş <input type="time" id="setOkulEnd"></label>
+    </div>
+    <div class="two">
+      <label>Boş gün başlangıç <input type="time" id="setBosStart"></label>
+      <label>Boş gün bitiş <input type="time" id="setBosEnd"></label>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Blok başına iş (45 dk'da ne kadar?)</h3>
+    <div class="two" id="rateBox"></div>
+    <p class="muted small">Plan, görev miktarını bu hızlara göre bloklara böler. Yavaş kalıyorsan sayıyı düşür.</p>
+  </div>
+
+  <div class="card">
+    <h3>Veri</h3>
     <div class="row-btns">
-      <button class="btn" id="exportBtn">Yedek al (JSON)</button>
-      <button class="btn" id="importBtn">Yedeği geri yükle</button>
-      <button class="btn danger" id="resetBtn">Programı sıfırla</button>
+      <button class="btn" id="exportBtn">Yedek al</button>
+      <button class="btn" id="importBtn">Geri yükle</button>
+      <button class="btn danger" id="resetBtn">Her şeyi sıfırla</button>
     </div>
     <input type="file" id="importFile" accept="application/json,.json" hidden>
-    <p class="hint">Veriler yalnızca bu telefonun tarayıcısında saklanır. Telefon değiştirirken yedek al.</p>
-  </section>
+    <p class="muted small">Veriler sadece bu telefonda saklanır, hiçbir yere gönderilmez.</p>
+  </div>
+</section>
 
 </main>
 
 <nav class="tabbar">
-  <button class="tab is-active" data-view="today"><span class="ico">📅</span>Bugün</button>
-  <button class="tab" data-view="week"><span class="ico">🗓️</span>Hafta</button>
-  <button class="tab" data-view="tasks"><span class="ico">✓</span>Ödev</button>
-  <button class="tab" data-view="edit"><span class="ico">⚙️</span>Düzenle</button>
+  <button class="tab is-active" data-view="today"><span class="ico">⚡</span>Bugün</button>
+  <button class="tab" data-view="tasks"><span class="ico">📚</span>Görevler</button>
+  <button class="tab" data-view="exams"><span class="ico">📈</span>Denemeler</button>
+  <button class="tab" data-view="settings"><span class="ico">⚙️</span>Ayarlar</button>
 </nav>
 
-<!-- ===== Ders formu ===== -->
-<dialog id="lessonDlg" class="sheet">
-  <form id="lessonForm" method="dialog">
-    <h2 id="lessonDlgTitle">Ders ekle</h2>
-    <label>Ders adı
-      <input name="name" required maxlength="60" placeholder="Matematik">
-    </label>
-    <label>Gün
-      <select name="day" id="daySelect"></select>
-    </label>
-    <div class="two">
-      <label>Başlangıç <input name="start" type="time" required value="09:00"></label>
-      <label>Bitiş <input name="end" type="time" required value="09:50"></label>
-    </div>
-    <div class="two">
-      <label>Derslik <input name="room" maxlength="30" placeholder="B-204"></label>
-      <label>Öğretmen <input name="teacher" maxlength="40" placeholder="Ayşe Yılmaz"></label>
-    </div>
-    <label>Renk</label>
-    <div class="swatches" id="swatches"></div>
-    <p class="err" id="lessonErr" hidden></p>
-    <div class="sheet-btns">
-      <button type="button" class="btn" id="lessonCancel">Vazgeç</button>
-      <button type="button" class="btn danger" id="lessonDelete" hidden>Sil</button>
-      <button type="button" class="btn primary" id="lessonSave">Kaydet</button>
-    </div>
-  </form>
-</dialog>
-
-<!-- ===== Ödev formu ===== -->
+<!-- ───── görev formu ───── -->
 <dialog id="taskDlg" class="sheet">
+  <h2 id="taskDlgTitle">Görev ekle</h2>
   <form id="taskForm" method="dialog">
-    <h2 id="taskDlgTitle">Ödev ekle</h2>
-    <label>Başlık
-      <input name="title" required maxlength="80" placeholder="Sayfa 42 sorular">
-    </label>
-    <label>Ders
-      <select name="lessonId" id="taskLessonSelect"></select>
-    </label>
-    <label>Teslim tarihi
-      <input name="due" type="date">
-    </label>
-    <label>Not
-      <textarea name="note" rows="3" maxlength="500" placeholder="İstersen detay yaz…"></textarea>
-    </label>
+    <label>Ders <select name="subjectId" id="taskSubj"></select></label>
+    <label>Ne yapacaksın? <input name="title" required maxlength="60" placeholder="Mol, konu tekrarı"></label>
+    <div class="two">
+      <label>Miktar <input name="amount" type="number" min="1" max="999" required value="3"></label>
+      <label>Birim <select name="unit" id="taskUnit"></select></label>
+    </div>
+    <div class="two">
+      <label>Son tarih <input name="due" type="date"></label>
+      <label>Öncelik
+        <select name="priority">
+          <option value="0">Normal</option>
+          <option value="1">Yüksek</option>
+          <option value="2">Acil</option>
+        </select>
+      </label>
+    </div>
+    <p class="muted small" id="taskEstimate"></p>
+    <p class="err" id="taskErr" hidden></p>
     <div class="sheet-btns">
       <button type="button" class="btn" id="taskCancel">Vazgeç</button>
       <button type="button" class="btn danger" id="taskDelete" hidden>Sil</button>
@@ -129,23 +180,45 @@
   </form>
 </dialog>
 
-<!-- ===== Ders detay ===== -->
-<dialog id="detailDlg" class="sheet">
-  <h2 id="detailName"></h2>
-  <p class="detail-meta" id="detailMeta"></p>
-  <label>Ders notu
-    <textarea id="detailNote" rows="5" maxlength="2000" placeholder="Kitap, sınav tarihi, hoca notu…"></textarea>
-  </label>
-  <h3 class="section-h" id="detailTasksH" hidden>Bu dersin ödevleri</h3>
-  <div id="detailTasks" class="task-list"></div>
-  <div class="sheet-btns">
-    <button class="btn" id="detailClose">Kapat</button>
-    <button class="btn primary" id="detailEdit">Dersi düzenle</button>
-  </div>
+<!-- ───── deneme formu ───── -->
+<dialog id="examDlg" class="sheet">
+  <h2 id="examDlgTitle">Deneme ekle</h2>
+  <form id="examForm" method="dialog">
+    <div class="two">
+      <label>Tarih <input name="date" type="date" required></label>
+      <label>Tür
+        <select name="kind" id="examKind">
+          <option value="TYT">TYT</option>
+          <option value="AYT">AYT (Sayısal)</option>
+        </select>
+      </label>
+    </div>
+    <label>Deneme adı <input name="name" maxlength="40" placeholder="3D Yayınları 5"></label>
+    <table class="net-table"><thead>
+      <tr><th>Ders</th><th>Doğru</th><th>Yanlış</th><th>Net</th></tr>
+    </thead><tbody id="netRows"></tbody></table>
+    <p class="total-net">Toplam net: <strong id="examTotal">0,00</strong></p>
+    <div class="sheet-btns">
+      <button type="button" class="btn" id="examCancel">Vazgeç</button>
+      <button type="button" class="btn danger" id="examDelete" hidden>Sil</button>
+      <button type="button" class="btn primary" id="examSave">Kaydet</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- ───── kutlama ───── -->
+<dialog id="winDlg" class="sheet win">
+  <div class="win-emoji">🎉</div>
+  <h2 id="winTitle">Günü bitirdin!</h2>
+  <p id="winText" class="muted"></p>
+  <button class="btn primary block big" id="winClose">Kapat</button>
 </dialog>
 
 <div id="toast" class="toast" hidden></div>
 
+<script src="js/store.js"></script>
+<script src="js/fx.js"></script>
+<script src="js/planner.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>
